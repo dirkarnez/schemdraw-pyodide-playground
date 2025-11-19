@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+      <link
+        rel="stylesheet"
+        href="https://fred-wang.github.io/MathFonts/LatinModern/mathfonts.css" />
+      <script src="https://fred-wang.github.io/mathjax.js/mpadded-min.js"></script>
+      <script src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+      <style>
+          textarea {
+              width: 100%;
+          }
+      </style>
+  </head>
+  <body>
+    <a href="https://github.com/dirkarnez/permutation-combination-calculator">dirkarnez/permutation-combination-calculator</a><br>
+    Pyodide test page<br>
+    Open your browser console to see Pyodide output
+ 	  <textarea id="textarea_input" rows="10" placeholder="Once upon a time..."></textarea>
+    <br>
+    <button id="btn_permutations_sample">Permutations sample</button>
+    <button id="btn_combinations_sample">Combinations sample</button>
+    <button id="btn_submit">Submit</button>
+    <br>
+    <div id="console_output"></div>
+    <script type="text/javascript">
+      (() => {
+        const worker = new Worker('worker.js');
+        worker.onmessage = function(e) {
+          consoleOutput.innerHTML += `${e.data}<br>`;
+        }
+        
+        const consoleOutput = document.getElementById("console_output");
+        const textareaInput = document.getElementById("textarea_input");
+      
+        document.getElementById("btn_submit").addEventListener("click", function() {
+            consoleOutput.innerHTML = "";
+            worker.postMessage([ textareaInput.value ]);
+        });
+
+        document.getElementById("btn_permutations_sample").addEventListener("click", function() {
+           textareaInput.value = `import itertools
+           
+print(list(itertools.permutations([1, 2, 3])))
+
+print(list(itertools.permutations("RLC", 2)))
+`;
+        });
+
+        document.getElementById("btn_combinations_sample").addEventListener("click", function() {
+           textareaInput.value = `import itertools
+print(list(itertools.combinations([1, 2, 3], 2)))
+
+print(list(itertools.combinations("RLC", 2)))
+`;
+        });
+      })()
+    </script>
+  </body>
+</html>
