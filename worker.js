@@ -23,7 +23,10 @@ const getPyodidePromise = (() => {
          .then(() => pyodide.loadPackage("matplotlib"))
          .then(() => pyodide.loadPackage("schemdraw"))
          .then(() => pyodide.pyimport("micropip"))
-         .then(micropip => console.log("micropip is ready")/*micropip.install("py-pde")*/)
+         .then(micropip => { 
+            console.log("micropip is ready");
+            return micropip.install("schemdraw")
+         })
          .then(() => res(pyodide));
        }
    })
