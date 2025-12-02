@@ -35,14 +35,37 @@
         
         consoleOutput.innerHTML = "";
         
-        textareaInput.value = `import schemdraw
+        textareaInput.value = `import matplotlib
+import matplotlib.pyplot
+
+import base64
+import os
+os.environ["MPLBACKEND"] = "AGG"
+from io import BytesIO
+
+def show(*, block=None):
+	buf = BytesIO()
+	matplotlib.pyplot.savefig(buf, format="png")
+	buf.seek(0)
+	# encode to a base64 str
+	img_str = base64.b64encode(buf.read()).decode('utf-8')
+	matplotlib.pyplot.clf()
+	buf.close()
+	print(f"data:image/png;base64,{img_str}")
+
+matplotlib.pyplot.show = show
+
+matplotlib.use('Agg')
+
+import schemdraw
 import schemdraw.elements as elm
-with schemdraw.Drawing(file='schematic.svg') as d:
+with schemdraw.Drawing() as d:
     elm.Resistor().label('100KΩ')
     elm.Capacitor().down().label('0.1μF', loc='bottom')
     elm.Line().left()
     elm.Ground()
     elm.SourceV().up().label('10V')
+
 `
       
         document.getElementById("btn_submit").addEventListener("click", function() {
