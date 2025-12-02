@@ -6,7 +6,7 @@
 ### Prebuilts
 - [prof-sky/simplipfy at 34a17db4c9077b47145fe1d1cf9f86165c6bd418](https://github.com/prof-sky/simplipfy/tree/34a17db4c9077b47145fe1d1cf9f86165c6bd418) 
 
-
+### Circuits
 ```
 %pip install schemdraw
 
@@ -24,7 +24,7 @@ with schemdraw.Drawing(file='schematic.svg') as d:
     elm.SourceV().up().label('10V')
     print(d.get_imagedata('svg')) # svg
 ```
-
+- [Analog Circuits — Schemdraw 0.22 documentation](https://schemdraw.readthedocs.io/en/stable/gallery/analog.html)
 
 https://www.zeusnotebook.com/
 
