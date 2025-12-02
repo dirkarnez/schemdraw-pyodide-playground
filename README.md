@@ -6,6 +6,10 @@
 ### Prebuilts
 - [prof-sky/simplipfy at 34a17db4c9077b47145fe1d1cf9f86165c6bd418](https://github.com/prof-sky/simplipfy/tree/34a17db4c9077b47145fe1d1cf9f86165c6bd418) 
 
+### Nots
+- matplotlib fix
+    - https://github.com/open-webui/open-webui/blob/140605e660b8186a7d5c79fb3be6ffb147a2f498/src/lib/workers/pyodide.worker.ts#L84
+
 ### Circuits
 ```
 %pip install schemdraw
