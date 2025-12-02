@@ -16,9 +16,9 @@
     <a href="https://github.com/dirkarnez/schemdraw-pyodide-playground">dirkarnez/schemdraw-pyodide-playground</a><br>
     Pyodide test page<br>
     Open your browser console to see Pyodide output
- 	  <textarea id="textarea_input" rows="10" placeholder="Once upon a time..."></textarea>
+ 	  <textarea id="textarea_input" rows="20" placeholder="Once upon a time..."></textarea>
     <br>
-    <button id="btn_permutations_sample">Permutations sample</button>
+    <button id="btn_ac_circuit_sample">AC circuit sample</button>
     <button id="btn_combinations_sample">Combinations sample</button>
     <button id="btn_submit">Submit</button>
     <br>
@@ -90,12 +90,73 @@ with schemdraw.Drawing() as d:
             worker.postMessage([ textareaInput.value ]);
         });
 
-        document.getElementById("btn_permutations_sample").addEventListener("click", function() {
-           textareaInput.value = `import itertools
-           
-print(list(itertools.permutations([1, 2, 3])))
+        document.getElementById("btn_ac_circuit_sample").addEventListener("click", function() {
+           textareaInput.value = `import matplotlib
+import matplotlib.pyplot
 
-print(list(itertools.permutations("RLC", 2)))
+import base64
+import os
+os.environ["MPLBACKEND"] = "AGG"
+from io import BytesIO
+
+def show(*, block=None):
+	buf = BytesIO()
+	matplotlib.pyplot.savefig(buf, format="png")
+	buf.seek(0)
+	# encode to a base64 str
+	img_str = base64.b64encode(buf.read()).decode('utf-8')
+	matplotlib.pyplot.clf()
+	buf.close()
+	print(f"data:image/png;base64,{img_str}")
+
+matplotlib.pyplot.show = show
+
+matplotlib.use('Agg')
+
+import schemdraw
+import schemdraw.elements as elm
+with schemdraw.Drawing() as d:
+    d.config(inches_per_unit=.5, unit=3)
+    D = elm.Rectifier()
+    elm.Line().left(d.unit*1.5).at(D.N).dot(open=True).idot()
+    elm.Line().left(d.unit*1.5).at(D.S).dot(open=True).idot()
+    G = elm.Gap().toy(D.N).label(['–', 'AC IN', '+'])
+
+    top = elm.Line().right(d.unit*3).at(D.E).idot()
+    Q2 = elm.BjtNpn(circle=True).up().anchor('collector').label('Q2\n2n3055')
+    elm.Line().down(d.unit/2).at(Q2.base)
+    Q2b = elm.Dot()
+    elm.Line().left(d.unit/3)
+    Q1 = elm.BjtNpn(circle=True).up().anchor('emitter').label('Q1\n    2n3054')
+    elm.Line().at(Q1.collector).toy(top.center).dot()
+
+    elm.Line().down(d.unit/2).at(Q1.base).dot()
+    elm.Zener().down().reverse().label('D2\n500mA', loc='bot').dot()
+    G = elm.Ground()
+    elm.Line().left().dot()
+    elm.Capacitor(polar=True).up().reverse().label('C2\n100$\\mu$F\n50V', loc='bot').dot()
+    elm.Line().right().hold()
+    elm.Resistor().toy(top.end).label('R1\n2.2K\n50V', loc='bot').dot()
+
+    d.move(dx=-d.unit, dy=0)
+    elm.Capacitor(polar=True).toy(G.start).flip().label('C1\n 1000$\\mu$F\n50V').dot().idot()
+    elm.Line().at(G.start).tox(D.W)
+    elm.Line().toy(D.W).dot()
+
+    elm.Resistor().right().at(Q2b.center).label('R2').label('56$\\Omega$ 1W', loc='bot').dot()
+    with d.hold():
+        elm.Line().toy(top.start).dot()
+        elm.Line().tox(Q2.emitter)
+    elm.Capacitor(polar=True).toy(G.start).label('C3\n470$\\mu$F\n50V', loc='bot').dot()
+    elm.Line().tox(G.start).hold()
+    elm.Line().right().dot()
+    elm.Resistor().toy(top.center).label('R3\n10K\n1W', loc='bot').dot()
+    elm.Line().left().hold()
+    elm.Line().right()
+    elm.Dot(open=True)
+    elm.Gap().toy(G.start).label(['+', '$V_{out}$', '–'])
+    elm.Dot(open=True)
+    elm.Line().left()
 `;
         });
 
