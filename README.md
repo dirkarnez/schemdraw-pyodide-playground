@@ -22,6 +22,8 @@ with schemdraw.Drawing(file='schematic.svg') as d:
     elm.Line().left()
     elm.Ground()
     elm.SourceV().up().label('10V')
+    print(d.get_imagedata('svg')) # svg
+```
 
 
 https://www.zeusnotebook.com/
