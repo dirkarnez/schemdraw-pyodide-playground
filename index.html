@@ -19,7 +19,7 @@
  	  <textarea id="textarea_input" rows="20" placeholder="Once upon a time..."></textarea>
     <br>
     <button id="btn_ac_circuit_sample">AC circuit sample</button>
-    <button id="btn_combinations_sample">Combinations sample</button>
+    <button id="btn_rc_circuit_sample">RC circuit sample</button>
     <button id="btn_submit">Submit</button>
     <br>
     <div id="console_output"></div>
@@ -160,11 +160,62 @@ with schemdraw.Drawing() as d:
 `;
         });
 
-        document.getElementById("btn_combinations_sample").addEventListener("click", function() {
-           textareaInput.value = `import itertools
-print(list(itertools.combinations([1, 2, 3], 2)))
+        document.getElementById("btn_rc_circuit_sample").addEventListener("click", function() {
+           textareaInput.value = `import matplotlib
+import matplotlib.pyplot
 
-print(list(itertools.combinations("RLC", 2)))
+import base64
+import os
+os.environ["MPLBACKEND"] = "AGG"
+from io import BytesIO
+
+def show(*, block=None):
+	buf = BytesIO()
+	matplotlib.pyplot.savefig(buf, format="png")
+	buf.seek(0)
+	# encode to a base64 str
+	img_str = base64.b64encode(buf.read()).decode('utf-8')
+	matplotlib.pyplot.clf()
+	buf.close()
+	print(f"data:image/png;base64,{img_str}")
+
+matplotlib.pyplot.show = show
+
+matplotlib.use('Agg')
+
+import schemdraw
+import schemdraw.elements as elm
+
+with schemdraw.Drawing() as d:
+    d.config(inches_per_unit=.5, unit=3)
+    
+    # Vin terminal (open dot, labeled)
+    vin = elm.Dot(open=True).label('Vin', 'left')
+    d.add(vin)
+    
+    # Wire to resistor
+    d.add(elm.Line().right(d.unit))
+    
+    # Resistor
+    r = elm.Resistor().right().label('R')
+    d.add(r)
+    
+    # Wire to Vout node
+    d.add(elm.Line().right(d.unit/2))
+    
+    # Vout terminal (open dot, labeled)
+    vout = elm.Dot(open=True).label('Vout', 'right')
+    d.add(vout)
+    
+    # Capacitor down to ground from Vout node
+    d.push()
+    d.add(elm.Capacitor().down().label('C'))
+    d.add(elm.Ground())
+    d.pop()
+    
+    # (Optional) Wire back to Vin to close the loop visually
+    # d.add(elm.Line().left().tox(vin.center).at(vout.center))
+
 `;
         });
       })()
